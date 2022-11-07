@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>获取OneDrive直链</title>
+<link rel="icon" href="icon.png" type="image/x-png" />
+<link rel="shortcut icon" href="icon.png" type="image/x-png" />
+<link href="style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="https://js.live.net/v7.2/OneDrive.js"></script>
+<!--<script type="text/javascript" src="OneDrive.js"></script>-->
+<script type="text/javascript" src="script.js"></script>
+<!--<script type="text/javascript" src="debug.js"></script>-->
+</head>
+
+<body>
+	<h1>获取OneDrive直链</h1>
+	<p>本应用的目的是为了获取OneDrive直链，方便在其他站点外链。本应用使用OneDrive官方API来进行获取，确保不失效。
+	</p>
+	<h3>隐私声明</h3>
+	<p>使用微软官方API，这里不会得到你的账号密码和其他用户资料。<br>
+	目前仅申请了Files.Read、Files.Read.Selected两个权限，API只会返回用户选择的文件的信息，不会获得其他内容。
+	</p>
+	<h3>使用方法</h3>
+	<ul class="howtouse">
+		<li>点击<span class="openbtn" title="不是点我，真的按钮在下面呢" onclick="alert('不是点我，真的按钮在下面呢')">从OneDrive选择文件</span>按钮，等待打开新窗口。</li>
+		<li>在新窗口中登陆OneDrive对应的账户并授予需要的权限。</li>
+		<li>进入OneDrive“公开”文件夹内选择需要获取直链的文件（同一文件夹内可多选），点击打开。</li>
+		<li>选择需要输出的掩码格式，输出面板内会自动生成对应的格式。</li>
+	</ul>
+<div class="picker">
+	<h3>控制面板</h3>
+	<button class="openbtn" onClick="launchOneDrivePicker('query')">
+		<img src="images/cloud-white-18dp.svg">
+		<span class="oneDriveButton">从OneDrive选择文件</span>
+	</button>
+	<button class="openbtn" onClick="launchOneDrivePicker('share')">
+		<img src="images/share-white-18dp.svg">
+		<span class="oneDriveButton">额外创建分享链接（配合1drv.ws使用）</span>
+	</button>
+	<!--<label><input type="checkbox" class="add-permission">主动添加访问权限（无所有人查看权限的文件）</label>-->
+	<h4>输出掩码选择</h4>
+	<div class="mask-bar">
+		<select class="mask-list" size="5" onclick="mask_select();">
+		</select>
+		<input class="mask-name" type="text" placeholder="自定义名称" />
+		<input class="mask-content" type="text" placeholder="掩码内容" />
+		<input class="mask-add" value="+" type="button" onclick="mask_add();" />
+		<input class="mask-remove" value="-" type="button" onclick="mask_remove();" />
+		<div class="tip">▲以上掩码设置保存在浏览器本地</div>
+	</div>
+</div>
+<div class="output">
+	<h3>输出面板</h3>
+	<div class="outinfo"></div>
+	<textarea class="outcontent"></textarea>
+</div>
+
+	<h3>F&amp;Q</h3>
+	<dl>
+		<dt>额外创建分享链接 是什么？</dt>
+		<dd>1drv.ws 是另一个第三方项目<a href="https://github.com/aploium/OneDrive-Direct-Link">The OneDrive Direct Download Link Helper</a>，通过获取文件的下载链接来达到外链目的。<br>
+			只需要将 1drv.<strong>m</strong>s 修改为 1drv.<strong>w</strong>s 即可。
+			因为需要后端实现对 onedrive.live.com 的重定向，因此本纯前端网页程序无法内置。
+			最终重定向地址类似于“官方图片下载直连”</dd>
+		<dd>优点：直接使用生成的分享链接，不需要先嵌入，再添加 authkey。据说是香港的CDN，比较快。</dd>
+		<dd>缺点：API 必须使用 share 模式来读取数据，因为无法直接选择文件夹，因此 OneDrive “<a href="https://onedrive.live.com/?qt=sharedby">由我共享</a>”内会生成大量项目。<br>
+			该方式得到的是下载链接，并不能直接在浏览器内预览文件。</dd>
+		<dt>如何书写掩码？</dt>
+		<dd>2020年3月25日新增，并<strong>推荐使用</strong>ES6原生<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/template_strings">模板字符串</a> ${表达式} 书写方式。
+			“file”表示该文件信息，“index”表示在获取列表中的序号，具体的JSON对象会在获取数据后发送到控制台（或查看全局变量 redata ），需要更多信息的的自己去看吧。</dd>
+		<dd>旧方法目前仍可用，但因为是自己实现的，因此不再推荐。旧方法请参考<a href="https://github.com/Mapaler/PixivUserBatchDownload/wiki/%E6%8E%A9%E7%A0%81" target="_blank">掩码用法</a>底部的高级用法。
+			旧方法的掩码转新写法一般简单把前面的 % 修改为 $即可，但若掩码内使用了 \ 转义符的需要去掉，掩码外需要使用 \ 和 ` 的则需加上转义符。
+			并且如果使用了变量定义，需要将其修改为闭包的函数表达式“(function(可选接收传入参数){任何代码 return 输出字符串;})(可选传入外部参数)”</dd>
+		<dt>如何收回我授予的权限？</dt>
+		<dd>访问微软账户<a href="https://account.live.com/consent/Manage" target="_blank">你已授予访问权限的应用和服务</a>删除即可。</dd>
+		<dt>如何添加通行证？</dt>
+		<dd>选中需要共享的文件夹，点击嵌入<br>
+			<div style="text-align: center;">
+				<img style="width: 60%;" src="images/Image 29.png" alt="点击嵌入"/><br>
+			</div>
+			在右方复制authkey及其值。将来这个文件夹内的文件及子文件夹都只需要这同一个通行码。<br>
+			<div style="text-align: center;">
+				<img style="width: 50%;" src="images/Image 30.png" alt="复制authkey"/><br>
+			</div>
+			如果忘记，可以重复上述步骤重新点击嵌入找到authkey<br>
+		</dd>
+	</dl>
+	</p>
+
+<div class="copyright">Copyright © gongzhaoxu</div>
+
+</body>
+</html>
