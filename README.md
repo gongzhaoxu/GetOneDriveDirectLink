@@ -1,8 +1,21 @@
 获取OneDrive直链
 ================
 
-本应用的目的是为了**批量**获取 OneDrive 直链，方便在其他站点外链。原作者为[Mapaler](https://github.com/Mapaler)，感谢Ta为社区开源做出的贡献。本应用在原版本基础上做出了微调，更适合个人使用。
+本应用的目的是为了**批量**获取 OneDrive 直链，方便在其他站点外链。
 
+# 作用
+对于搭建博客网站的个人来说，要想写出丰富的文章，必然会嵌入很多多媒体文件，此项目便基于微软的OneDrive，只需两步，即可给您的本地文件（如JPEG、PNG、MP4、MP3等）赋予互联网地址：
+
+1.注册OneDrive，上传您所需要在文章中嵌入的图片、视频、音频。
+
+2.使用此项目，解析出直链。
+# 优点
+1.免费，OneDrive有5g免费存储空间，可按需扩容，对于长期使用的个人用户来说非常的划算。您不必在各大云厂商购买昂贵的存储服务，
+
+2.解析速度快，采用OneDrive官方接口，可大批量解析直链。
+
+3.资源直接加载，不必下载后浏览。
+2.使用此项目，解析出直链。
 # 马上使用
 
 [https://gongzhaoxu.github.io/GetOneDriveDirectLink/index.html](https://gongzhaoxu.github.io/GetOneDriveDirectLink/index.html)
@@ -28,20 +41,5 @@
 ## 原理
 
 `http://storage.live.com/items/文件ID` 是很早之前就流传的 SkyDrive 官方的真实直链重定向地址，出处不可考。
-开始一般是用 `http://storage.live.com/items/文件ID?filename=xxx.jpg`来外链图片，后面的文件名用来欺骗DiscuzX论坛系统，但是浏览器下载该文件还是没有正确文件名。
-后来有高手发现的 `http://storage.live.com/items/文件ID:/xxx.jpg`这个地址格式不会影响 SkyDrive 识别ID，还同时可以欺骗浏览器为普通文件地址，识别出文件的文件名与扩展名。
+开始一般是用 `http://storage.live.com/items/文件ID?filename=xxx.jpg`来外链图片，后来有高手发现的 `http://storage.live.com/items/文件ID:/xxx.jpg`这个地址格式不会影响 SkyDrive 识别ID，还同时可以欺骗浏览器为普通文件地址，识别出文件的文件名与扩展名。
 访问 `onedrive.live.com` 域名需要翻墙，但是生成的 `storage.live.com` 链接不需要。
-
-### 1drv.ws 原理
-
-**1drv.ws** 是 *[The OneDrive Direct Download Link Helper](//github.com/aploium/OneDrive-Direct-Link)* 项目的实现。原理为
-
-1. 获取OneDrive的分享链接 `https://1drv.ms/u/分享ID`
-2. 重定向到 `https://onedrive.live.com/redir?resid=文件ID&authkey=通行证`
-3. 将访问网页的地址修改为下载地址 `https://onedrive.live.com/download?resid=文件ID&authkey=通行证`
-4. 再次重定向到真实CDN地址 `https://public.ch.files.1drv.com/很长一串字符/文件名?download&psid=1`
-
-其中，对 `onedrive.live.com` 的重定向需要墙外后端支持。
-
-在 OneDrive SDK 中，使用 `share` 操作才能新增并获取到分享链接，因此添加了“额外创建分享链接”按钮。
-掩码将获取到的分享链接中的 1drv.**m**s 修改为 1drv.**w**s ，即可得到下载链接。但是这种方式的 http header `content-Dispositong` 值为 `attachemen` 会弹出下载窗口，而不是内部预览。
