@@ -126,7 +126,7 @@ function load_mask_local() //从空白加载设置
 		((parseInt(GM_getValue("new-mask-version"),10) || 1)<curMaskVersion)
 	) //没有掩码数据，初始化默认配置。
 	{
-		addNewMask("我的外链","http://storage.live.com/items/${file.id}:/${file.name}?authkey=AHhUrBxZRl_hwM0");
+		addNewMask("我的外链","http://storage.live.com/items/${file.id}:/${file.name}?authkey=AG1K-ogAWv5U46E");
 		addNewMask("普通外链","http://storage.live.com/items/${file.id}:/${file.name}");
 		addNewMask("最短链接","http://storage.live.com/items/${file.id}");
 		addNewMask("如何自定义自己的掩码？","将我的外链掩码的authkey修改为你自己的即可");
